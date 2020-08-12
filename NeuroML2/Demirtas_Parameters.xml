@@ -1,0 +1,11 @@
+<Lems>
+    
+    <Include file="Model.xml"/>
+    
+    <DemirtasEtAl2019CellExcitatory id="Exc"  S0="0" tau="0.1s"  SIG="0.01" d="0.16" GAMMA="0.641"  />
+    <DemirtasEtAl2019CellInhibitory id="Inh"  S0="0" tau="0.01s" SIG="0.01" d="0.087"  />
+    <rateSynapse id="rsExc" />
+    <rateSynapse id="rsInh" />
+    <silentRateSynapse id="silent1"/>
+
+</Lems>

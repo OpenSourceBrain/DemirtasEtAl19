@@ -1,0 +1,85 @@
+{
+    "Demirtas_network": {
+        "version": "NeuroMLlite v0.2.1",
+        "notes": "Rate model with E and I populations",
+        "cells": [
+            {
+                "Exc": {
+                    "lems_source_file": "Demirtas_Parameters.xml"
+                }
+            },
+            {
+                "Inh": {
+                    "lems_source_file": "Demirtas_Parameters.xml"
+                }
+            }
+        ],
+        "input_sources": [
+            {
+                "pulseGenerator0": {
+                    "neuroml2_input": "PulseGenerator",
+                    "parameters": {
+                        "amplitude": "1e-6A",
+                        "delay": "100.0ms",
+                        "duration": "800.0ms"
+                    }
+                }
+            }
+        ],
+        "regions": [
+            {
+                "Demirtas": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "width": 1000.0,
+                    "height": 100.0,
+                    "depth": 1000.0
+                }
+            }
+        ],
+        "populations": [
+            {
+                "Excitatory": {
+                    "size": 1,
+                    "component": "Exc",
+                    "properties": {
+                        "color": "0.8 0 0",
+                        "radius": 10
+                    },
+                    "relative_layout": {
+                        "region": "Demirtas",
+                        "x": -20.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    }
+                }
+            },
+            {
+                "Inhibitory": {
+                    "size": 1,
+                    "component": "Inh",
+                    "properties": {
+                        "color": "0 0 0.8",
+                        "radius": 10
+                    },
+                    "relative_layout": {
+                        "region": "Demirtas",
+                        "x": 20.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    }
+                }
+            }
+        ],
+        "inputs": [
+            {
+                "stim": {
+                    "input_source": "pulseGenerator0",
+                    "population": "Excitatory",
+                    "percentage": 100.0
+                }
+            }
+        ]
+    }
+}

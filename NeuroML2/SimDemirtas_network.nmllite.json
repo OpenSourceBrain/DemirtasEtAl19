@@ -1,0 +1,16 @@
+{
+    "SimDemirtas_network": {
+        "version": "NeuroMLlite v0.2.1",
+        "network": "Demirtas_network.json",
+        "duration": 1000.0,
+        "dt": 0.1,
+        "recordVariables": {
+            "r": {
+                "all": "*"
+            },
+            "e": {
+                "all": "*"
+            }
+        }
+    }
+}

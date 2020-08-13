@@ -39,7 +39,7 @@ net.populations.append(inh_pop)
 
 input_source = InputSource(id='pulseGenerator0', 
                            neuroml2_input='PulseGenerator', 
-                           parameters={'amplitude':'1e-6A', 'delay':'100.0ms', 'duration':'800.0ms'})
+                           parameters={'amplitude':'1nA', 'delay':'100.0ms', 'duration':'800.0ms'})
 net.input_sources.append(input_source)
 
 net.inputs.append(Input(id='stim',
@@ -55,7 +55,10 @@ sim = Simulation(id='SimDemirtas_network',
                                     duration='1000',
                                     dt='0.1',
                                     network=new_file,
-                                    recordVariables={'r':{'all':'*'},'e':{'all':'*'}}
+                                    recordVariables={'r':{'all':'*'},
+                                                     'e':{'all':'*'},
+                                                     'f':{'all':'*'},
+                                                     'iSyn':{'all':'*'}}
                                     )
                             
 sim.to_json_file('SimDemirtas_network.nmllite.json')

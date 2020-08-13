@@ -19,7 +19,7 @@
                 "pulseGenerator0": {
                     "neuroml2_input": "PulseGenerator",
                     "parameters": {
-                        "amplitude": "1e-6A",
+                        "amplitude": "1nA",
                         "delay": "100.0ms",
                         "duration": "800.0ms"
                     }

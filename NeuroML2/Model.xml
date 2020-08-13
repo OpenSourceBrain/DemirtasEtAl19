@@ -7,13 +7,12 @@
 
     <Dimension name="per_charge" i="-1" t="-1"/>
     
-    <Unit symbol="per_nC" dimension="per_charge" power="-9"/>
+    <Unit symbol="per_nC" dimension="per_charge" power="9"/>
 
     <ComponentType  name="DemirtasEtAl2019Cell"
                      extends="baseRateUnit"
                      description="Work in progress...">
 
-        
         <Parameter name="a" dimension="per_charge"/>
         <Parameter name="b" dimension="per_time"/>
         <Parameter name="d" dimension="time"/>
@@ -32,7 +31,7 @@
 
             <DerivedVariable name="iSyn" dimension="current" exposure="iSyn" select="synapses[*]/i" reduce="add" />
 
-            <DerivedVariable name="e" dimension="per_time" value="(a * iSyn) + b"/>
+            <DerivedVariable name="e" dimension="per_time" value="(a * iSyn) - b"/>
 
             <DerivedVariable name="f" dimension="per_time" exposure="f" value="e/(1 - exp(-1*d*e))"/>
             <DerivedVariable name="r" dimension="per_time" exposure="r" value="f"/>

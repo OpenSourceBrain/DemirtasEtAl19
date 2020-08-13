@@ -3,7 +3,7 @@ from hbnm.model.dmf import Model
 
 import numpy as np
 
-sc = np.array([[0.1,1],[0.1,0.1]])
+sc = np.array([[0.1,1],[0.5,0.1]])
 
 print('Structural connectivity:\n%s'%sc)
 
@@ -13,7 +13,7 @@ model = Model(sc, g=0, norm_sc=True, hmap = None,
                  verbose=True)
             
 print('Created model')
-t = 5
+t = 2
 
 model.set_jacobian(compute_fic=True)
 
@@ -23,5 +23,13 @@ model.integrate(t,
                   include_BOLD=True, from_fixed=True,
                   sim_seed=None, save_mem=False)
                  
-
 print('Integrated model')
+
+import matplotlib.pyplot as plt
+print(model.sim.r_E)
+
+plt.plot(model.sim.r_E.T)
+plt.plot(model.sim.r_I.T)
+
+plt.show()
+

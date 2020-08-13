@@ -2,8 +2,8 @@
     
     <Include file="Model.xml"/>
     
-    <DemirtasEtAl2019Cell id="Exc" a="310per_nC" b="125Hz" d="0.16s" tau="0.1s" sigma="0.01nA" noiseDt="0.1ms"/> 
-    <DemirtasEtAl2019Cell id="Inh" a="615per_nC" b="177Hz" d="0.087s" tau="0.01s" sigma="0.01nA" noiseDt="0.1ms"/>
+    <DemirtasEtAl2019Cell id="Exc" a="310per_nC" b="125Hz" d="0.16s" tau="0.1s" sigma="0.01nA" noiseDt="0.1ms" gamma="0.641" ei="1"/> 
+    <DemirtasEtAl2019Cell id="Inh" a="615per_nC" b="177Hz" d="0.087s" tau="0.01s" sigma="0.01nA" noiseDt="0.1ms" gamma="0.641" ei="0"/>
     <rateSynapse id="rsExc" />
     <rateSynapse id="rsInh" />
     <silentRateSynapse id="silent1"/>

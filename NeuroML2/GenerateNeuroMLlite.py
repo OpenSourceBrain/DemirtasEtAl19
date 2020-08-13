@@ -60,7 +60,8 @@ sim = Simulation(id='SimDemirtas_network',
                                                      'f':{'all':'*'},
                                                      'iSyn':{'all':'*'},
                                                      'nu':{'all':'*'},
-                                                     'internalNoise':{'all':'*'}}
+                                                     'internalNoise':{'all':'*'},
+                                                     'S':{'all':'*'}}
                                     )
                             
 sim.to_json_file('SimDemirtas_network.nmllite.json')

@@ -1,6 +1,6 @@
 <Lems xmlns="http://www.neuroml.org/lems/0.7.4"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.neuroml.org/lems/0.7.4 ../../LEMS/Schemas/LEMS/LEMS_v0.7.4.xsd"
+      xsi:schemaLocation="http://www.neuroml.org/lems/0.7.4 https://raw.githubusercontent.com/LEMS/LEMS/master/Schemas/LEMS/LEMS_v0.7.4.xsd"
       description="A number of ComponentTypes for rate based/population models">
 
     <Include file="RateBased.xml"/>
@@ -16,18 +16,29 @@
         <Parameter name="a" dimension="per_charge"/>
         <Parameter name="b" dimension="per_time"/>
         <Parameter name="d" dimension="time"/>
-
-        <Attachments name="synapses" type="basePointCurrent"/>
-
-        <Exposure name="f" dimension="none"/>
-        <Exposure name="iSyn" dimension="current"/>
+        
+        <Parameter name="tau" dimension="time"/>
+        <Parameter name="sigma" dimension="current" description="Standard deviation of noise"/>
+        <Parameter name="noiseDt" dimension="time"/>
 
         <Constant name="NAMP_SCALE" dimension="current" value="1 nA"/>
         <Constant name="HZ_SCALE" dimension="per_time" value="1 Hz"/>
+        
+        <Attachments name="synapses" type="basePointCurrent"/>
+        
+        <Exposure name="f" dimension="none"/>
+        <Exposure name="iSyn" dimension="current"/>
+        <Exposure name="S" dimension="none"/>
+        <Exposure name="nu" dimension="none"/>
+        <Exposure name="internalNoise" dimension="per_time"/>
+
 
         <Dynamics>
 
+            <StateVariable name="S" dimension="none" exposure="S"/>
             <StateVariable name="v" dimension="voltage" exposure="v"/>
+            
+            <StateVariable name="nu" dimension="none" exposure="nu"/>
 
             <DerivedVariable name="iSyn" dimension="current" exposure="iSyn" select="synapses[*]/i" reduce="add" />
 
@@ -36,10 +47,18 @@
             <DerivedVariable name="f" dimension="per_time" exposure="f" value="e/(1 - exp(-1*d*e))"/>
             <DerivedVariable name="r" dimension="per_time" exposure="r" value="f"/>
 
+            <DerivedVariable name="internalNoise" dimension="current" exposure="internalNoise" value="sigma * nu * (tau/ noiseDt) ^ .5 * HZ_SCALE"/>
 
+            <DerivedVariable name="U" dimension="none" value="random(1)"/>
+            <DerivedVariable name="V" dimension="none" value="random(1)"/>
+            
             <!-- On condition is not need on the model but NeuroML requires its definition -->
             <OnCondition test="r .lt. 0">
                 <EventOut port="spike"/>
+            </OnCondition>
+            
+            <OnCondition test="t .geq. 0">
+                <StateAssignment variable="nu" value="sqrt(-2*log(U))*cos(2*3.14159265359*V)"/>
             </OnCondition>
 
         </Dynamics>

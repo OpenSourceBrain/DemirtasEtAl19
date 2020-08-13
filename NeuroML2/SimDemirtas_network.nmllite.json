@@ -16,6 +16,12 @@
             },
             "iSyn": {
                 "all": "*"
+            },
+            "nu": {
+                "all": "*"
+            },
+            "internalNoise": {
+                "all": "*"
             }
         }
     }

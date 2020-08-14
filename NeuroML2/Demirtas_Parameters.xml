@@ -2,7 +2,7 @@
     
     <Include file="Model.xml"/>
     
-    <DemirtasEtAl2019Cell id="Exc" 
+    <demirtasEtAl2019Cell id="Exc" 
                           a="310per_nC" 
                           b="125Hz" 
                           d="0.16s" 
@@ -14,7 +14,7 @@
                           wBackground="1" 
                           S0="0.15"/> 
                           
-    <DemirtasEtAl2019Cell id="Inh" 
+    <demirtasEtAl2019Cell id="Inh" 
                           a="615per_nC" 
                           b="177Hz" 
                           d="0.087s" 
@@ -28,8 +28,9 @@
                           S0="0.15"/>
     
 
-    <rateSynapse id="rsExc" />
-    <rateSynapse id="rsInh" />
+    <demirtasEtAl2019Synapse id="rsExc" />
+    <demirtasEtAl2019Synapse id="rsInh" />
+    
     <silentRateSynapse id="silent1"/>
 
 </Lems>

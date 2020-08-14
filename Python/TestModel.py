@@ -69,7 +69,7 @@ print('Baseline currents I: %s'%model._I0_I)
 ### Check stability
 ''''''
 model._w_EE = np.array([0]*num_areas)
-model._w_EI = np.array([0]*num_areas)
+model._w_EI = np.array([.1]*num_areas)
 model._w_IE = np.array([0]*num_areas)
 model._w_II = np.array([0]*num_areas)
 

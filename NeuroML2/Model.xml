@@ -9,7 +9,7 @@
     
     <Unit symbol="per_nC" dimension="per_charge" power="9"/>
 
-    <ComponentType  name="DemirtasEtAl2019Cell"
+    <ComponentType  name="demirtasEtAl2019Cell"
                      extends="baseRateUnit"
                      description="Work in progress...">
 
@@ -86,70 +86,23 @@
     </ComponentType>
 
 
-    <ComponentType  name="DemirtasEtAl2019Synapse"
-                     extends="baseRateUnit"
+    <ComponentType  name="demirtasEtAl2019Synapse"
+                     extends="baseRateSynapse"
                      description="Work in progress...">
 
-        <Parameter name="tau" dimension="time"/>
-        <Parameter name="SIG" dimension="none" description="Standard deviation of noise"/>
-        <Parameter name="d" dimension="none" />
-        <Parameter name="GAMMA" dimension="none"/>
 
-        <Constant name="NAMP_SCALE" dimension="current" value="1 nA"/>
-        <Constant name="HZ_SCALE" dimension="per_time" value="1 Hz"/>
-        <Constant name="MVOLT_SCALE" dimension="voltage" value="1mV"/>
+        <Property name="weight" dimension="none" defaultValue="1"/>
 
-        <Attachments name="synapses" type="basePointCurrent"/>
+        <Constant name="SEC" dimension="time" value="1s"/>
+        <Constant name="NAMP_SCALE" dimension="current" value="1nA"/>
 
-        <Exposure name="S" dimension="none"/>
-        <Exposure name="phi" dimension="none"/>
-        <Exposure name="iSyn" dimension="current"/>
-        <Exposure name="xi" dimension="none"/>
+        <InstanceRequirement name="peer" type="rateSynapse"/>
 
         <Dynamics>
-
-            <StateVariable name="S" dimension="none" exposure="S"/>
-            <StateVariable name="v" dimension="voltage" exposure="v"/>
-            
-
-            <StateVariable name="U" dimension="none"/>
-            <StateVariable name="V" dimension="none"/>
-            <StateVariable name="xi" dimension="none" exposure="xi"/>
-
-            <DerivedVariable name="iSyn" dimension="current" exposure="iSyn" select="synapses[*]/i" reduce="add" />
-            <DerivedVariable name="x" dimension="none" value="(iSyn)/NAMP_SCALE"/>
-
-            <!-- Set v to r for now...
-            <DerivedVariable name="v" dimension="voltage" exposure="v" value="0*MVOLT_SCALE"/>-->
-            
-            <DerivedVariable name="internalNoise" dimension="per_time"  value="SIG * xi * HZ_SCALE"/>
-            
-            <ConditionalDerivedVariable name="phi" dimension="none" exposure="phi">
-                <Case condition="x .eq. 0" value="1"/>
-                <Case condition="x .neq. 0" value="x / (1 - exp(-d*x))"/>
-            </ConditionalDerivedVariable>
-
-           
-            <TimeDerivative variable="S" value="-1*S/tau + (1-S)*GAMMA*phi*HZ_SCALE + internalNoise "/>
-
-
-            <OnStart>
-                <StateAssignment variable="S" value="0"/>
-            </OnStart>
-
-            <!-- On condition is not need on the model but NeuroML requires its definition -->
-            <OnCondition test="S .lt. 0">
-                <EventOut port="spike"/>
-            </OnCondition>
-
-            <OnCondition test="t .geq. 0">
-                <StateAssignment variable="U" value="random(1)"/>
-                <StateAssignment variable="V" value="random(1)"/>
-                <StateAssignment variable="xi" value="sqrt(-2*log(U))*cos(2*3.14159265359*V)"/>
-            </OnCondition>
-
+            <DerivedVariable name="Speer" dimension="per_time" select="peer/S"/>
+            <DerivedVariable name="i" exposure="i"  dimension="current" value="weight * SEC * NAMP_SCALE * Speer"/>
         </Dynamics>
-
+        
     </ComponentType>
 
 

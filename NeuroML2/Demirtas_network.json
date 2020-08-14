@@ -1,6 +1,12 @@
 {
     "Demirtas_network": {
         "version": "NeuroMLlite v0.2.1",
+        "parameters": {
+            "wee": 0,
+            "wei": 0.1,
+            "wie": 0,
+            "wii": 0
+        },
         "notes": "Rate model with E and I populations",
         "cells": [
             {
@@ -10,6 +16,18 @@
             },
             {
                 "Inh": {
+                    "lems_source_file": "Demirtas_Parameters.xml"
+                }
+            }
+        ],
+        "synapses": [
+            {
+                "rsExc": {
+                    "lems_source_file": "Demirtas_Parameters.xml"
+                }
+            },
+            {
+                "rsInh": {
                     "lems_source_file": "Demirtas_Parameters.xml"
                 }
             }
@@ -68,6 +86,60 @@
                         "x": 20.0,
                         "y": 0.0,
                         "z": 0.0
+                    }
+                }
+            }
+        ],
+        "projections": [
+            {
+                "proj_Excitatory_Excitatory": {
+                    "presynaptic": "Excitatory",
+                    "postsynaptic": "Excitatory",
+                    "synapse": "rsExc",
+                    "type": "continuousProjection",
+                    "delay": 0,
+                    "weight": "wee",
+                    "random_connectivity": {
+                        "probability": 1
+                    }
+                }
+            },
+            {
+                "proj_Excitatory_Inhibitory": {
+                    "presynaptic": "Excitatory",
+                    "postsynaptic": "Inhibitory",
+                    "synapse": "rsExc",
+                    "type": "continuousProjection",
+                    "delay": 0,
+                    "weight": "wei",
+                    "random_connectivity": {
+                        "probability": 1
+                    }
+                }
+            },
+            {
+                "proj_Inhibitory_Excitatory": {
+                    "presynaptic": "Inhibitory",
+                    "postsynaptic": "Excitatory",
+                    "synapse": "rsInh",
+                    "type": "continuousProjection",
+                    "delay": 0,
+                    "weight": "wie",
+                    "random_connectivity": {
+                        "probability": 1
+                    }
+                }
+            },
+            {
+                "proj_Inhibitory_Inhibitory": {
+                    "presynaptic": "Inhibitory",
+                    "postsynaptic": "Inhibitory",
+                    "synapse": "rsInh",
+                    "type": "continuousProjection",
+                    "delay": 0,
+                    "weight": "wii",
+                    "random_connectivity": {
+                        "probability": 1
                     }
                 }
             }

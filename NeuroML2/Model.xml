@@ -13,6 +13,9 @@
                      extends="baseRateUnit"
                      description="Work in progress...">
 
+        <Parameter name="S0" dimension="none"/>
+        
+        
         <Parameter name="a" dimension="per_charge"/>
         <Parameter name="b" dimension="per_time"/>
         <Parameter name="d" dimension="time"/>
@@ -23,6 +26,9 @@
         <Parameter name="tau" dimension="time"/>
         <Parameter name="sigma" dimension="current" description="Standard deviation of noise"/>
         <Parameter name="noiseDt" dimension="time"/>
+        
+        
+        <Parameter name="iBackground" dimension="current"/>
 
         <Constant name="NAMP_SCALE" dimension="current" value="1 nA"/>
         <Constant name="HZ_SCALE" dimension="per_time" value="1 Hz"/>
@@ -45,17 +51,22 @@
 
             <DerivedVariable name="iSyn" dimension="current" exposure="iSyn" select="synapses[*]/i" reduce="add" />
 
-            <DerivedVariable name="e" dimension="per_time" value="(a * iSyn) - b"/>
+            <DerivedVariable name="e" dimension="per_time" value="(a * (iSyn+iBackground) ) - b"/>
 
             <DerivedVariable name="f" dimension="per_time" exposure="f" value="e/(1 - exp(-1*d*e))"/>
             <DerivedVariable name="r" dimension="per_time" exposure="r" value="f"/>
 
-            <DerivedVariable name="internalNoise" dimension="current" exposure="internalNoise" value="sigma * nu * (tau/ noiseDt) ^ .5 * HZ_SCALE"/>
+            <DerivedVariable name="internalNoise" dimension="current" exposure="internalNoise" value="sigma * nu * (tau/ noiseDt) ^ .5"/>
 
             <DerivedVariable name="U" dimension="none" value="random(1)"/>
             <DerivedVariable name="V" dimension="none" value="random(1)"/>
             
             <TimeDerivative variable="S" value="-1*S/tau + (1-ei*S)*gamma*r"/>
+            
+            
+            <OnStart>
+                <StateAssignment variable="S" value="S0"/>
+            </OnStart>
             
             <!-- On condition is not need on the model but NeuroML requires its definition -->
             <OnCondition test="r .lt. 0">
@@ -81,16 +92,16 @@
         <Parameter name="d" dimension="none" />
         <Parameter name="GAMMA" dimension="none"/>
 
+        <Constant name="NAMP_SCALE" dimension="current" value="1 nA"/>
+        <Constant name="HZ_SCALE" dimension="per_time" value="1 Hz"/>
+        <Constant name="MVOLT_SCALE" dimension="voltage" value="1mV"/>
+
         <Attachments name="synapses" type="basePointCurrent"/>
 
         <Exposure name="S" dimension="none"/>
         <Exposure name="phi" dimension="none"/>
         <Exposure name="iSyn" dimension="current"/>
         <Exposure name="xi" dimension="none"/>
-
-        <Constant name="NAMP_SCALE" dimension="current" value="1 nA"/>
-        <Constant name="HZ_SCALE" dimension="per_time" value="1 Hz"/>
-        <Constant name="MVOLT_SCALE" dimension="voltage" value="1mV"/>
 
         <Dynamics>
 
@@ -105,15 +116,16 @@
             <DerivedVariable name="iSyn" dimension="current" exposure="iSyn" select="synapses[*]/i" reduce="add" />
             <DerivedVariable name="x" dimension="none" value="(iSyn)/NAMP_SCALE"/>
 
+            <!-- Set v to r for now...
+            <DerivedVariable name="v" dimension="voltage" exposure="v" value="0*MVOLT_SCALE"/>-->
+            
+            <DerivedVariable name="internalNoise" dimension="per_time"  value="SIG * xi * HZ_SCALE"/>
+            
             <ConditionalDerivedVariable name="phi" dimension="none" exposure="phi">
                 <Case condition="x .eq. 0" value="1"/>
                 <Case condition="x .neq. 0" value="x / (1 - exp(-d*x))"/>
             </ConditionalDerivedVariable>
 
-            <!-- Set v to r for now...
-            <DerivedVariable name="v" dimension="voltage" exposure="v" value="0*MVOLT_SCALE"/>-->
-            
-            <DerivedVariable name="internalNoise" dimension="per_time"  value="SIG * xi * HZ_SCALE"/>
            
             <TimeDerivative variable="S" value="-1*S/tau + (1-S)*GAMMA*phi*HZ_SCALE + internalNoise "/>
 

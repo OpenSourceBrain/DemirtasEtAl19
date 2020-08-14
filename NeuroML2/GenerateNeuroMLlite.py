@@ -39,7 +39,7 @@ net.populations.append(inh_pop)
 
 input_source = InputSource(id='pulseGenerator0', 
                            neuroml2_input='PulseGenerator', 
-                           parameters={'amplitude':'1nA', 'delay':'100.0ms', 'duration':'800.0ms'})
+                           parameters={'amplitude':'0nA', 'delay':'100.0ms', 'duration':'800.0ms'})
 net.input_sources.append(input_source)
 
 net.inputs.append(Input(id='stim',

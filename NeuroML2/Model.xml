@@ -29,6 +29,7 @@
         
         
         <Parameter name="iBackground" dimension="current"/>
+        <Parameter name="wBackground" dimension="none"/>
 
         <Constant name="NAMP_SCALE" dimension="current" value="1 nA"/>
         <Constant name="HZ_SCALE" dimension="per_time" value="1 Hz"/>
@@ -37,6 +38,7 @@
         
         <Exposure name="f" dimension="none"/>
         <Exposure name="iSyn" dimension="current"/>
+        <Exposure name="iTotal" dimension="current"/>
         <Exposure name="S" dimension="none"/>
         <Exposure name="nu" dimension="none"/>
         <Exposure name="internalNoise" dimension="per_time"/>
@@ -50,8 +52,9 @@
             <StateVariable name="nu" dimension="none" exposure="nu"/>
 
             <DerivedVariable name="iSyn" dimension="current" exposure="iSyn" select="synapses[*]/i" reduce="add" />
+            <DerivedVariable name="iTotal" dimension="current" exposure="iTotal" value="iSyn+wBackground*iBackground"/>
 
-            <DerivedVariable name="e" dimension="per_time" value="(a * (iSyn+iBackground) ) - b"/>
+            <DerivedVariable name="e" dimension="per_time" value="(a * (iTotal) ) - b"/>
 
             <DerivedVariable name="f" dimension="per_time" exposure="f" value="e/(1 - exp(-1*d*e))"/>
             <DerivedVariable name="r" dimension="per_time" exposure="r" value="f"/>

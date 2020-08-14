@@ -1,10 +1,11 @@
 
+import numpy as np
 from hbnm.model.dmf import Model
 from hbnm.io import Data
 
 from hbnm.model.utils import linearize_map, normalize_sc
 
-# from https://github.com/murraylab/hbnm/blob/master/scripts/optimization.py#L54 
+# helper method from https://github.com/murraylab/hbnm/blob/master/scripts/optimization.py#L54 
 def load_data(data):
     fin = data.load('demirtas_neuron_2019.hdf5')
     sc = fin['sc'].value
@@ -19,15 +20,12 @@ def load_data(data):
 
     return sc, hmap, fc_obj
 
-import numpy as np
-
-output_dir = '.'
-input_dir = '../../../../../../git/hbnm/data/'
-
 
 ################################################################################
 ###  Load or generate the Structural connectivity matrix
 
+output_dir = '.'
+input_dir = '../../../../../../git/hbnm/data/'
 data = Data(input_dir, output_dir)     
 sc, hmap, fc_obj = load_data(data)         # Full scale network
 sc = np.array([[0.001,1],[0.001,0.001]])   # 2 cortical areas
@@ -55,22 +53,19 @@ print('Created model')
         
 ################################################################################
 ### Change some parameters
-
 model._sigma = 0
-model._sigma = 0
+'''
+model._sigma = 0'''
 print('External currents: %s'%model._I_ext)
-model._I0_E = np.array([0.3]*num_pops)
-model._I0_I = np.array([0.3]*num_pops)
+#model._I0_E = np.array([0.3]*num_pops)
+#model._I0_I = np.array([0.3]*num_pops)
 print('Baseline currents E: %s'%model._I0_E)
 print('Baseline currents I: %s'%model._I0_I)
 
 
 ################################################################################
 ### Check stability
-
-j = model.set_jacobian(compute_fic=True)
-print('System stable: %s'%j)
-
+''''''
 model._w_EE = np.array([0]*num_pops)
 model._w_EI = np.array([0]*num_pops)
 model._w_IE = np.array([0]*num_pops)
@@ -81,6 +76,19 @@ print('Weight E->I: %s'%model._w_EI)
 print('Weight I->E: %s'%model._w_IE)
 print('Weight I->I: %s'%model._w_II)
 
+# if True, local feedback inhibition parameters (w^{IE}) are adjusted to set the firing rates of
+# excitatory populations to ~3Hz
+compute_fic = False
+            
+            
+j = model.set_jacobian(compute_fic=compute_fic)
+print('System stable: %s'%j)
+
+print('Calc weight K E->E: %s'%model._K_EE)
+print('Calc weight K E->I: %s'%model._K_EI)
+print('Calc weight K I->E: %s'%model._K_IE)
+print('Calc weight K I->I: %s'%model._K_II)
+
 
 ################################################################################
 ### Set initial values
@@ -90,19 +98,24 @@ from_fixed = False
 #from_fixed = True
            
 if not from_fixed:
-    model._r_E = np.array([5] * num_pops)
-    model._r_I = np.array([5] * num_pops)
-    model._I_I = np.array([0] * num_pops)
-    model._I_E = np.array([0] * num_pops)
-    model._S_I = np.array([0.15] * num_pops)
+    
+    import hbnm.model.params.synaptic as params
+    model._r_E = np.array([ 3.5268949118680477 ] * num_pops) 
+    model._r_I = np.array([ 6.339408113275469 ] * num_pops)
+    model._S_E = np.array([ 0.18438852019969373 ] * num_pops)
+    model._S_I = np.array([ 0.06339408113275538 ] * num_pops)
+    model._I_E = np.array([ 0.382 ] * num_pops)
+    model._I_I = np.array([ 0.26739999999999997 ] * num_pops)
+    
     model._S_E = np.array([0.15] * num_pops)
+    model._S_I = np.array([0.15] * num_pops)
 
 
 ################################################################################
 ### Integrate model
 
-duration = 1
-dt=1e-4 
+duration = 1  # sec
+dt=1e-4       # sec
 
 model.integrate(duration,
                   dt=dt, n_save=10, stimulation=0.0,
@@ -123,15 +136,15 @@ vars = {'Rates':['r_E','r_I'],
         'S variables':['S_E','S_I'],
         'Currents':['I_E','I_I']}
 
+
 for v in vars:
     fig = plt.figure()
     fig.canvas.set_window_title(v)
     plt.title(v)
     for t in vars[v]:
         a = eval('model.sim.%s'%t)
-        print(a.shape)
-        print(a[0].shape)
         for i in range(num_pops):
+            print('Plotting %i values for %s in pop %i (%s -> %s)'%(len(a[i]), t, i, a[i][0], a[i][-1]))
             plt.plot(a[i],label='%s[%i]'%(t,i))
         
     plt.legend()

@@ -58,7 +58,7 @@ sim = Simulation(id='SimDemirtas_network',
                                     recordVariables={'r':{'all':'*'},
                                                      'e':{'all':'*'},
                                                      'f':{'all':'*'},
-                                                     'iSyn':{'all':'*'},
+                                                     'iTotal':{'all':'*'},
                                                      'nu':{'all':'*'},
                                                      'internalNoise':{'all':'*'},
                                                      'S':{'all':'*'}}

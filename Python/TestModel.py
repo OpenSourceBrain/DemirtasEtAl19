@@ -31,8 +31,8 @@ sc, hmap, fc_obj = load_data(data)         # Full scale network
 sc = np.array([[0.001,1],[0.001,0.001]])   # 2 cortical areas
 sc = np.array([[1e-12]])                   # 1 cortical area
     
-num_pops = sc.shape[0]
-print('Structural connectivity for %i pops (%s):\n%s'%(num_pops, sc.shape, sc))
+num_areas = sc.shape[0]
+print('Structural connectivity for %i areas (%s):\n%s'%(num_areas, sc.shape, sc))
 
 
 
@@ -53,12 +53,14 @@ print('Created model')
         
 ################################################################################
 ### Change some parameters
-model._sigma = 0
+
+model._sigma = 0  # Turn off noise!
 '''
 model._sigma = 0'''
+
 print('External currents: %s'%model._I_ext)
-#model._I0_E = np.array([0.3]*num_pops)
-#model._I0_I = np.array([0.3]*num_pops)
+#model._I0_E = np.array([0.3]*num_areas)
+#model._I0_I = np.array([0.3]*num_areas)
 print('Baseline currents E: %s'%model._I0_E)
 print('Baseline currents I: %s'%model._I0_I)
 
@@ -66,10 +68,10 @@ print('Baseline currents I: %s'%model._I0_I)
 ################################################################################
 ### Check stability
 ''''''
-model._w_EE = np.array([0]*num_pops)
-model._w_EI = np.array([0]*num_pops)
-model._w_IE = np.array([0]*num_pops)
-model._w_II = np.array([0]*num_pops)
+model._w_EE = np.array([0]*num_areas)
+model._w_EI = np.array([0]*num_areas)
+model._w_IE = np.array([0]*num_areas)
+model._w_II = np.array([0]*num_areas)
 
 print('Weight E->E: %s'%model._w_EE)
 print('Weight E->I: %s'%model._w_EI)
@@ -100,15 +102,15 @@ from_fixed = False
 if not from_fixed:
     
     import hbnm.model.params.synaptic as params
-    model._r_E = np.array([ 3.5268949118680477 ] * num_pops) 
-    model._r_I = np.array([ 6.339408113275469 ] * num_pops)
-    model._S_E = np.array([ 0.18438852019969373 ] * num_pops)
-    model._S_I = np.array([ 0.06339408113275538 ] * num_pops)
-    model._I_E = np.array([ 0.382 ] * num_pops)
-    model._I_I = np.array([ 0.26739999999999997 ] * num_pops)
+    model._r_E = np.array([ 3.5268949118680477 ] * num_areas) 
+    model._r_I = np.array([ 6.339408113275469 ] * num_areas)
+    model._S_E = np.array([ 0.18438852019969373 ] * num_areas)
+    model._S_I = np.array([ 0.06339408113275538 ] * num_areas)
+    model._I_E = np.array([ 0.382 ] * num_areas)
+    model._I_I = np.array([ 0.26739999999999997 ] * num_areas)
     
-    model._S_E = np.array([0.15] * num_pops)
-    model._S_I = np.array([0.15] * num_pops)
+    model._S_E = np.array([0.15] * num_areas)
+    model._S_I = np.array([0.15] * num_areas)
 
 
 ################################################################################
@@ -117,8 +119,11 @@ if not from_fixed:
 duration = 1  # sec
 dt=1e-4       # sec
 
+n_save=10
+n_save = 1 # Save every point
+
 model.integrate(duration,
-                  dt=dt, n_save=10, stimulation=0.0,
+                  dt=dt, n_save=n_save, stimulation=0.0,
                   delays=False, distance=None, velocity=None,
                   include_BOLD=True, from_fixed=from_fixed,
                   sim_seed=1234, save_mem=False)
@@ -132,20 +137,29 @@ print('Integrated model')
 import matplotlib.pyplot as plt
 print(model.sim.r_E)
 
-vars = {'Rates':['r_E','r_I'],
+var_types = {'Rates':['r_E','r_I'],
         'S variables':['S_E','S_I'],
         'Currents':['I_E','I_I']}
+times = [i*dt for i in range(int(duration/dt) +1)]
 
-
-for v in vars:
+for var_type in var_types:
     fig = plt.figure()
-    fig.canvas.set_window_title(v)
-    plt.title(v)
-    for t in vars[v]:
-        a = eval('model.sim.%s'%t)
-        for i in range(num_pops):
-            print('Plotting %i values for %s in pop %i (%s -> %s)'%(len(a[i]), t, i, a[i][0], a[i][-1]))
-            plt.plot(a[i],label='%s[%i]'%(t,i))
+    fig.canvas.set_window_title(var_type)
+    plt.title(var_type)
+    for var in var_types[var_type]:
+        a = eval('model.sim.%s'%var)
+        for i in range(num_areas):
+            print('Plotting %i values for %s: %s in area %i (%s -> %s)'%(len(a[i]), var_type, var, i, a[i][0], a[i][-1]))
+            plt.plot(times, a[i],label='%s[%i]'%(var,i))
+            plt.xlabel('Time (s)')
+            
+        f = open('%s_%iareas.dat'%(var, num_areas),'w')
+        for ti in range(len(times)):
+            f.write('%s\t'%(times[ti], ))
+            for i in range(num_areas):
+                f.write('%s\t'%(a[i][ti], ))
+            f.write('\n')
+        f.close()
         
     plt.legend()
     
